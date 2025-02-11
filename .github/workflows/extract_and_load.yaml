@@ -3,6 +3,7 @@ name: Extract and Load Credit Data
 env:
   SECRET_TOKEN: ${{secrets.SECRET_TOKEN}}
   GCP_CREDENTIALS_BASE64: ${{secrets.HELIUM_HEALTH_CREDS}}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   # GOOGLE_APPLICATION_CREDENTIALS: heliumhealth-1ce77f433fc7.json
 
 on:
@@ -31,3 +32,17 @@ jobs:
 
       - name: Run Pipeline Script
         run: python helium-evolve-credit.py
+
+      - name: Send Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
+          SLACK_MESSAGE: "Data Pipeline execution completed successfully."
+        if: success()
+
+      - name: Send Slack Notification on Failure
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
+          SLACK_MESSAGE: "Data Pipeline execution failed."
+        if: failure()
