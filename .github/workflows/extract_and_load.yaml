@@ -34,15 +34,9 @@ jobs:
         run: python helium-evolve-credit.py
 
       - name: Send Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
-          SLACK_MESSAGE: "Data Pipeline execution completed successfully."
-        if: success()
-
-      - name: Send Slack Notification on Failure
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
-          SLACK_MESSAGE: "Data Pipeline execution failed."
-        if: failure()
+        uses: act10ns/slack@v2
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#workflows'
+        if: always()
