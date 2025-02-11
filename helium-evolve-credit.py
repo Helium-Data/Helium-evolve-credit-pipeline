@@ -11,7 +11,8 @@ from google.cloud import bigquery
 
 
 # Authenticating token from config file. 
-token = config.token
+# token = config.token
+token = os.getenv("SECRET_TOKEN")
 
 # Using the token to create header parameter for the API get request
 headers={'Authorization': f'Bearer {token}'}
