@@ -1,0 +1,33 @@
+name: Extract and Load Credit Data
+
+env:
+  SECRET_TOKEN: ${{secrets.SECRET_TOKEN}}
+  GCP_CREDENTIALS_BASE64: ${{secrets.HELIUM_HEALTH_CREDS}}
+  GOOGLE_APPLICATION_CREDENTIALS: $GITHUB_WORKSPACE/heliumhealth-1ce77f433fc7.json
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'  # Runs at 6 AM and 6 PM UTC
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Decode Google Credentials
+        run: echo "$GCP_CREDENTIALS_BASE64" | base64 --decode | jq > $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Run Pipeline Script
+        run: python helium-evolve-credit.py
