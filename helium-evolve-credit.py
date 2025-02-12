@@ -1,7 +1,6 @@
 # Load Library
 import json
 import requests
-import config
 import os
 import pandas as pd
 
